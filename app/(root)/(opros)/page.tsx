@@ -1,5 +1,5 @@
-import { QuestionWrapper } from "@/components";
+import { Question } from "@/components";
 
 export default function RootPage() {
-  return <QuestionWrapper />;
+  return <Question />;
 }

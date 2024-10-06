@@ -1,30 +1,75 @@
 "use client";
 
+import { questions, useDispaStore, UserAnswersT } from "@/utils/store/store";
 import { supabase } from "@/utils/supabase/supabase";
-import { UserAnswersT } from "./question-wrapper";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const End = () => {
   const { push } = useRouter();
 
-  const params = useSearchParams();
+  const { answers } = useDispaStore();
 
-  const [answers, setAnswers] = useState<any[]>([]);
+  const temp = answers[answers.findIndex((item) => item.val == "Да")];
 
-  const [isRendered, setRendered] = useState(false);
+  const [txt, setTxt] = useState<string>();
 
   useEffect(() => {
-    params.forEach((val) => {
-      setAnswers((prev) => prev.concat(val));
-    });
-    setRendered(true);
-  });
+    if (temp) {
+      switch (temp.name) {
+        case questions[0].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью выявления  повышенного артериального давления, риска развития Артериальной Гипертензии факторов риска приводящих к ней."
+          );
+          break;
+        case questions[1].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью выявления  Артериальной Гипертензии, факторов риска приводящих к ней."
+          );
+          break;
+        case questions[2].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью диагностики  повышенного содержания глюкозы в крови, риска развития Сахарного диабета."
+          );
+          break;
+        case questions[3].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью диагностики  риска развития Сахарного диабета"
+          );
+          break;
+        case questions[4].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью контроля исследования  холестерина крови и профилактики заболеваний, которые развиваются при повышенном уровне холестерина в крови."
+          );
+          break;
+        case questions[5].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью установления причины возникновения боли, уточнения диагноза."
+          );
+          break;
+        case questions[6].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью исключения риска развития онкологического заболевания."
+          );
+          break;
+        case questions[7].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью исключения риска развития онкологического заболевания."
+          );
+          break;
+        case questions[8].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью диагностики заболеваний мочевыделительной системы."
+          );
+          break;
+        case questions[9].name:
+          setTxt(
+            "Вам необходимо обратиться в поликлинику, пройти диспансеризацию с целью посещения школы здоровья по отказу от курения, профилактики развития бронхо-легочных заболеваний."
+          );
+          break;
+      }
+    }
+  }, [temp]);
 
   const handleClick = async (answers: UserAnswersT[]) => {
     const { data, error } = await supabase
@@ -36,46 +81,26 @@ export const End = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      {isRendered ? (
-        <div className="text-center">
-          {answers.findIndex((item) => item == "Да") !== -1 ? (
-            <div>
-              <h1 className="text-5xl font-semibold text-red-600">
-                Результаты
-              </h1>
-              <div className="mt-10 text-xl w-3/5 mx-auto">
-                По результатам опроса Вам рекомендуется пройти диспацеризацию.
-                <br />
-                Чтобы перейти к записи через госулуги нажмите на кнопку
-                "Перейти".
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h1 className="text-5xl font-semibold text-green-600">
-                Результаты
-              </h1>
-              <div className="mt-10 text-xl w-3/5 mx-auto">
-                По результатам опроса Вы здоровы, но для более точного
-                результата, Мы рекомендуем Вам пройти диспацеризацию.
-                <br />
-                Чтобы перейти к записи через госулуги нажмите на кнопку
-                "Перейти".
-              </div>
-            </div>
-          )}
-
-          <button
-            className="rounded-xl px-5 py-3 font-medium text-2xl bg-gray-300 hover:opacity-90 transition duration-300 mt-10"
-            onClick={() => handleClick([])}
-          >
-            Перейти
-          </button>
+    <div className="flex justify-center items-center h-screen font-sans">
+      <div className="text-center">
+        <div>
+          <h1 className="text-5xl font-bold">Результаты</h1>
+          <div className="mt-10 text-2xl w-full md:w-1/2 mx-auto">
+            {txt ?? (
+              <span>
+                По результатам опроса вы здоровы, но Мы всё равно рекомендуем
+                пройти Вам диспанцеризацию!
+              </span>
+            )}
+          </div>
         </div>
-      ) : (
-        ""
-      )}
+        <button
+          className="rounded-xl px-5 py-3 font-medium text-2xl bg-gray-300 hover:opacity-90 transition duration-300 mt-10"
+          onClick={() => handleClick(answers)}
+        >
+          Перейти
+        </button>
+      </div>
     </div>
   );
 };
