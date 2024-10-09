@@ -72,7 +72,7 @@ export const End = () => {
   }, [temp]);
 
   const handleClick = async (answers: UserAnswersT[]) => {
-    const { data, error } = await supabase
+    await supabase
       .from("opros")
       .insert([{ data: { answers } }])
       .select();
